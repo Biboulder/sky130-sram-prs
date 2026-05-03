@@ -1,0 +1,11 @@
+import "sizes.act";
+import "sky130_6T_bitcell.act";
+
+defproc test ()
+{
+    bool wl, bl, _bl;
+    mem::bitcell::bitcell x;
+    wl  = x.wl;
+    bl  = x.bl;
+    _bl = x._bl;
+}

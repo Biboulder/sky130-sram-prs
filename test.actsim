@@ -1,0 +1,19 @@
+watch wl
+watch bl
+watch _bl
+watch x.Q
+watch x._Q
+set wl 0
+set bl 1
+set _bl 0
+cycle
+set wl 1
+cycle
+set wl 0
+cycle
+set bl 0
+set _bl 1
+set wl 1
+cycle
+set wl 0
+cycle

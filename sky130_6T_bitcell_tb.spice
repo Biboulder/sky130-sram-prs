@@ -1,0 +1,79 @@
+.title sky130_6t_bitcell testbench
+
+* Load all sky130 models via absolute path (resolves relative sub-includes correctly)
+.lib "/home/bibo/.volare/volare/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/ngspice/sky130.lib.spice" tt
+
+* 6T SRAM bitcell using sky130 special SRAM devices (matching VLSIDA sky130_sram_macros)
+* All devices are subckts with ports (d g s b); W/L in um (scale=1e-6 set by sky130.lib.spice)
+* special_nfet_latch supports only W=0.21; drive transistors use two in parallel for W=0.42
+.subckt sky130_6t_bitcell BL BR WL VDD GND
+XM1a Q    Qb  GND GND sky130_fd_pr__special_nfet_latch W=0.21 L=0.15
+XM1b Q    Qb  GND GND sky130_fd_pr__special_nfet_latch W=0.21 L=0.15
+XM2a Qb   Q   GND GND sky130_fd_pr__special_nfet_latch W=0.21 L=0.15
+XM2b Qb   Q   GND GND sky130_fd_pr__special_nfet_latch W=0.21 L=0.15
+XM3  Q    Qb  VDD VDD sky130_fd_pr__special_pfet_latch  W=0.14 L=0.15
+XM4  Qb   Q   VDD VDD sky130_fd_pr__special_pfet_latch  W=0.14 L=0.15
+XM5  BL   WL  Q   GND sky130_fd_pr__special_nfet_latch  W=0.21 L=0.15
+XM6  BR   WL  Qb  GND sky130_fd_pr__special_nfet_latch  W=0.21 L=0.15
+.ends sky130_6t_bitcell
+
+* Instantiate cell
+XDUT BL BR WL VDD GND sky130_6t_bitcell
+
+* Supply
+VVDD VDD GND dc 1.8
+
+* Wordline: pulses twice (write-1 then write-0)
+VWL WL GND pwl(
++ 0ns   0
++ 9.9ns 0
++ 10ns  1.8
++ 19ns  1.8
++ 19.1ns 0
++ 29.9ns 0
++ 30ns  1.8
++ 39ns  1.8
++ 39.1ns 0
++ 60ns  0)
+
+* BL=1, BR=0 for write-1 phase; BL=0, BR=1 for write-0 phase
+VBL BL GND pwl(
++ 0ns  1.8
++ 29ns 1.8
++ 30ns 0
++ 60ns 0)
+
+VBR BR GND pwl(
++ 0ns  0
++ 29ns 0
++ 30ns 1.8
++ 60ns 1.8)
+
+* Transient simulation
+.tran 10ps 60ns
+
+.control
+run
+
+* Measure node voltages at end of each write phase
+meas tran q_wr1  find V(XDUT.Q)  AT=19ns
+meas tran qb_wr1 find V(XDUT.Qb) AT=19ns
+meas tran q_wr0  find V(XDUT.Q)  AT=39ns
+meas tran qb_wr0 find V(XDUT.Qb) AT=39ns
+
+* Pass/fail checks
+if $&q_wr1 > 1.5
+  echo "PASS write-1: Q=" $&q_wr1
+else
+  echo "FAIL write-1: Q=" $&q_wr1
+end
+if $&q_wr0 < 0.3
+  echo "PASS write-0: Q=" $&q_wr0
+else
+  echo "FAIL write-0: Q=" $&q_wr0
+end
+
+write sky130_6T_bitcell_tb.raw v(XDUT.Q) v(XDUT.Qb) v(WL) v(BL) v(BR)
+.endc
+
+.end

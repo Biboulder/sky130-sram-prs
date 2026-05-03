@@ -1,0 +1,15 @@
+/* ACT PRS sizes for sky130 6T SRAM bitcell
+ * Skywater 130nm technology
+ * Devices: special_nfet_latch, special_pfet_latch
+ * All widths in um; L=0.15um is minimum for both devices
+ */
+
+namespace mem {
+    export namespace bitcell {
+
+        preal Wn    = 0.42;   /* pull-down NFET (2x special_nfet_latch W=0.21 in parallel) */
+        preal Wp    = 0.14;   /* pull-up  PFET (special_pfet_latch) */
+        preal Wpass = 0.21;   /* access   NFET (special_nfet_latch) */
+        preal L     = 0.15;   /* minimum gate length for both devices */
+    }
+}

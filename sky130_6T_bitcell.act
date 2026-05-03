@@ -1,0 +1,31 @@
+import globals;
+
+namespace mem {
+    export namespace bitcell {
+
+        /* sky130 6T SRAM bitcell
+         * Devices: special_nfet_latch (W=0.21, L=0.15)
+         *          special_pfet_latch (W=0.14, L=0.15)
+         * Drive transistors use two passn in parallel (XM1a+XM1b) = W=0.42 equivalent
+         * Sizing parameters defined in sizes.act
+         */
+        export defcell bitcell (bool? wl; bool bl, _bl)
+        {
+            bool Q, _Q;
+
+            prs
+            {
+                 Q  <Wn,L> -> _Q-
+                ~Q  <Wp,L> -> _Q+
+
+                 _Q <Wn,L> ->  Q-
+                ~_Q <Wp,L> ->  Q+
+
+                passn <Wpass,L> (wl,  Q,  bl)
+                passn <Wpass,L> (wl, _Q, _bl)
+            }
+
+        }
+
+    }
+}
