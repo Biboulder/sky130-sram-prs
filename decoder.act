@@ -1,0 +1,50 @@
+import std;
+
+namespace mem {
+
+    export namespace decoder {
+
+        template <pint N>
+        defproc nand (bool? in[N]; bool! out)
+        {
+            prs {
+                (&i:N:  in[i]) -> out-
+                (|i:N: ~in[i]) -> out+
+            }
+        }
+
+        defproc inv (bool? in; bool! out)
+        {
+            prs {
+                in -> out-
+                ~in -> out+
+            }
+        }
+
+        export template <pint N>
+        defproc decoder (bool? in[std::ceil_log2(N)]; bool! out[N]) 
+        {
+            // N = number of outputs
+            // M = number of inputs = log2(N)
+            pint M = std::ceil_log2 (N);
+
+            bool _in[M], _out[N];
+
+            inv inv_array[N+M];
+
+            nand<M> nand_array[N];
+
+            ( j : M : inv_array[j] (.in=in[j] , .out=_in[j]); )
+            ( i : N :
+                inv_array[i+M] (.in=_out[i] , .out=out[i]);
+                nand_array[i].out=_out[i];
+                ( j : M :
+                    [  ((i>>j) & 1) = 0 -> nand_array[i].in[j] = _in[j];
+                    [] ((i>>j) & 1) = 1 -> nand_array[i].in[j] = in[j];
+                    ]
+                )
+            )
+        }
+    }
+}
+

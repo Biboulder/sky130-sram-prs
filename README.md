@@ -1,6 +1,6 @@
 # sky130 SRAM — PRS Implementation
 
-Filippo Pruzzi, s50237 \
+Filippo Pruzzi, s250237 \
 Stefano Garbari, s260328
 
 
