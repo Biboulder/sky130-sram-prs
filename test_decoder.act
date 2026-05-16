@@ -1,6 +1,0 @@
-import "decoder.act";
-
-defproc test ()
-{
-    mem::decoder::decoder<8> d;
-}

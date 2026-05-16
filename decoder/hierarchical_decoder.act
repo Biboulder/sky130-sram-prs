@@ -1,0 +1,44 @@
+import std;
+import decoder::gates;
+import decoder::minterm_decoder;
+
+namespace decoder {
+
+    export namespace hierarchical_decoder {
+
+        export template <pint N>
+        defproc hierarchical_decoder (bool? in[std::ceil_log2(N)]; bool! out[N]) 
+        {
+            { N=128 : "hierarchical_decoder only supports N=128" };
+
+            decoder::minterm_decoder::minterm_decoder<4> pre_dec_1;
+            decoder::minterm_decoder::minterm_decoder<4> pre_dec_2;
+            decoder::minterm_decoder::minterm_decoder<8> pre_dec_3;
+
+            bool _out[N];
+
+            bool pre_dec_1_out[4];
+            bool pre_dec_2_out[4];
+            bool pre_dec_3_out[8];
+
+            decoder::gates::nand<3> nand_array[N];
+            decoder::gates::inv inv_array[N];
+
+            pre_dec_1 (.in=in[0..1], .out=pre_dec_1_out);
+            pre_dec_2 (.in=in[2..3], .out=pre_dec_2_out);
+            pre_dec_3 (.in=in[4..6], .out=pre_dec_3_out);
+
+            (n:N:
+                _out[n] = nand_array[n].out;
+                inv_array[n] (.in=_out[n], .out=out[n]);
+            )
+
+            (i:4: (j:4: (k:8:
+                nand_array[k*16+j*4+i].in[0]=pre_dec_1_out[i];
+                nand_array[k*16+j*4+i].in[1]=pre_dec_2_out[j];
+                nand_array[k*16+j*4+i].in[2]=pre_dec_3_out[k];
+            )))
+        }
+    }
+}
+

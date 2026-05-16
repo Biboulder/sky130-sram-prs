@@ -1,0 +1,7 @@
+import decoder::minterm_decoder;
+import decoder::hierarchical_decoder;
+
+defproc test()
+{
+    decoder::hierarchical_decoder::hierarchical_decoder<128> d;
+}

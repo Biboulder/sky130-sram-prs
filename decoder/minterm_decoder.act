@@ -1,28 +1,12 @@
 import std;
+import decoder::gates;
 
-namespace mem {
+namespace decoder {
 
-    export namespace decoder {
-
-        template <pint N>
-        defproc nand (bool? in[N]; bool! out)
-        {
-            prs {
-                (&i:N:  in[i]) -> out-
-                (|i:N: ~in[i]) -> out+
-            }
-        }
-
-        defproc inv (bool? in; bool! out)
-        {
-            prs {
-                in -> out-
-                ~in -> out+
-            }
-        }
+    export namespace minterm_decoder {
 
         export template <pint N>
-        defproc decoder (bool? in[std::ceil_log2(N)]; bool! out[N]) 
+        defproc minterm_decoder (bool? in[std::ceil_log2(N)]; bool! out[N]) 
         {
             // N = number of outputs
             // M = number of inputs = log2(N)
@@ -30,9 +14,9 @@ namespace mem {
 
             bool _in[M], _out[N];
 
-            inv inv_array[N+M];
+            decoder::gates::inv inv_array[N+M];
 
-            nand<M> nand_array[N];
+            decoder::gates::nand<M> nand_array[N];
 
             ( j : M : inv_array[j] (.in=in[j] , .out=_in[j]); )
             ( i : N :
