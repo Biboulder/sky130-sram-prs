@@ -1,0 +1,6 @@
+import wordline_driver::wordline_driver;
+
+defproc test()
+{
+    wordline_driver::wordline_driver::wordline_driver<8> wd;
+}

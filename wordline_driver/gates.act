@@ -1,0 +1,31 @@
+/* Simple gates for the wordline driver. 
+ * Skywater 130nm technology.
+ * The nand2 gate has the same transistor sizes as the 2-input NAND gate in the decoder (see decoder/gates.act).
+ * The inverter has larger transistor sizes to drive the large capacitance of the wordline.
+ */
+
+import std;
+
+namespace wordline_driver {
+
+    export namespace gates {
+
+        export template <pint N>
+        defproc nand2 (bool? a; bool? b; bool! out)
+        {
+            prs {
+                ( a<0.74,0.15> &  b<0.74,0.15>) -> out-
+                (~a<1.12,0.15> | ~b<1.12,0.15>) -> out+
+            }
+        }
+
+        export defproc inv (bool? in; bool! out)
+        {
+            prs {
+                in<7.0,0.15> -> out-
+                ~in<7.0,0.15> -> out+
+            }
+        }
+    }
+}
+

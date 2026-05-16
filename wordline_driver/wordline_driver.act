@@ -1,0 +1,30 @@
+/*
+ * Wordline driver for the SRAM. 
+ * Skywater 130nm technology.
+ * The wordline driver is a simple NAND gate followed by an inverter. The NAND gate is used to
+ * enable/disable the wordline, while the inverter is used to drive the large capacitance of the wordline.
+*/
+
+import std;
+import wordline_driver::gates;
+
+namespace wordline_driver {
+
+    export namespace wordline_driver {
+
+        export template <pint N>
+        defproc wordline_driver (bool? enable; bool? in[N]; bool! out[N]) 
+        {
+            bool _out[N];
+
+            wordline_driver::gates::nand2 nand_array[N];
+            wordline_driver::gates::inv inv_array[N];
+
+            ( i : N :
+                nand_array[i] (.a=in[i], .b=enable, .out=_out[i]);
+                inv_array[i] (.in=_out[i], .out=out[i]);
+            )
+        }
+    }
+}
+
