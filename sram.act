@@ -1,0 +1,27 @@
+/*
+ * put together all of the stuff (decoder, wordline driver, bitcell array) to make a complete SRAM
+ * NOT THOROUGHLY TESTED YET
+*/
+
+
+import mem::bitcell_array;
+import decoder::hierarchical_decoder;
+import wordline_driver::wordline_driver;
+
+defproc sram ()
+{
+    pint N = 128; // Number of rows
+    pint M = 64;  // Number of columns
+
+    bool wl[N];
+    bool bl[M];
+    bool _bl[M];
+    bool enable_wl;
+
+    decoder::hierarchical_decoder::hierarchical_decoder<N> decoder;
+    wordline_driver::wordline_driver::wordline_driver<N> wl_driver;
+    mem::bitcell_array::bitcell_array<N, M> bitcell_array;
+
+    wl_driver (.enable=enable_wl, .in=decoder.out, .out=wl);
+    bitcell_array (.wl=wl, .bl=bl, ._bl=_bl);
+}
