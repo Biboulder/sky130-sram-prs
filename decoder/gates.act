@@ -4,8 +4,6 @@
  * The logic is scalable, the physical implementation is not.
  */
 
-import std;
-
 namespace decoder {
 
     export namespace gates {

@@ -5,7 +5,6 @@
  * enable/disable the wordline, while the inverter is used to drive the large capacitance of the wordline.
 */
 
-import std;
 import wordline_driver::gates;
 
 namespace wordline_driver {

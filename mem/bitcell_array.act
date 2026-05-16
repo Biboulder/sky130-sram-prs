@@ -1,0 +1,24 @@
+/*
+ * Bit cell array for the SRAM.
+ * Skywater 130nm technology.
+ * The bit cell array is a grid of bit cells, connected to wordlines and bitlines.
+ */
+
+
+import mem::bitcell;
+
+namespace mem {
+
+    export namespace bitcell_array {
+
+        export template <pint H, W> // H (Height): number of rows, W (Width): number of columns
+        defproc bitcell_array (bool? wl[H]; bool bl[W], _bl[W]) 
+        {
+            mem::bitcell::bitcell array[H*W];
+            ( i : H : ( j : W :
+                array[i*W+j] (.wl=wl[i], .bl=bl[j], ._bl=_bl[j]);
+            ))
+        }
+    }
+}
+
