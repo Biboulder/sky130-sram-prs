@@ -1,5 +1,5 @@
 import "sizes.act";
-import "sky130_6T_bitcell.act";
+import mem::bitcell;
 
 defproc test ()
 {
