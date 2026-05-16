@@ -1,3 +1,12 @@
+/*
+ * Minterm decoder for the SRAM.
+ * The decoder is implemented using inverters and NAND gates.
+ * This implementation is scalable, and the logic is correct for any N.
+ * The logic is scalable, the physical implementation is not: 
+ * - M-input NAND gates are not pracital for large M
+ * - The transistor sizes are fixed and not optimized in the NAND gates (see gates.act)
+*/
+
 import std;
 import decoder::gates;
 
