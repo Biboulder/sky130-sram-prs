@@ -7,21 +7,32 @@
 import mem::bitcell_array;
 import decoder::hierarchical_decoder;
 import wordline_driver::wordline_driver;
+import column_mux::column_mux_array;
 
 defproc sram ()
 {
-    pint N = 128; // Number of rows
-    pint M = 64;  // Number of columns
+    pint R = 128; // Number of rows
+    pint C = 64;  // Number of columns
+    pint W = 32;  // Size of the word (number of bits per word)
 
-    bool wl[N];
-    bool bl[M];
-    bool _bl[M];
+    pint addr_size = std::ceil_log2(R) + std::ceil_log2(C/W); // Total address size (row + column)
+
+    bool addr[addr_size]; // Address bus
+
+    bool wl[R];
+    bool bl[W]; // muxed bitlines
+    bool _bl[W]; // muxed bitlines (inverted)
     bool enable_wl;
 
-    decoder::hierarchical_decoder::hierarchical_decoder<N> decoder;
-    wordline_driver::wordline_driver::wordline_driver<N> wl_driver;
-    mem::bitcell_array::bitcell_array<N, M> bitcell_array;
+    decoder::hierarchical_decoder::hierarchical_decoder<R> decoder;
+    wordline_driver::wordline_driver::wordline_driver<R> wl_driver;
+    mem::bitcell_array::bitcell_array<R, C> bitcell_array;
+    column_mux::column_mux_array::column_mux_array<C, C/W> mux;
 
     wl_driver (.enable=enable_wl, .in=decoder.out, .out=wl);
-    bitcell_array (.wl=wl, .bl=bl, ._bl=_bl);
+    bitcell_array (.wl=wl, .bl=mux.bl, ._bl=mux._bl);
+    mux (.bl_out=bl, ._bl_out=_bl);
+
+    mux.addr   = addr[0..std::ceil_log2(C/W)-1];
+    decoder.in = addr[std::ceil_log2(C/W)..addr_size-1];
 }

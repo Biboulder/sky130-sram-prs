@@ -1,0 +1,24 @@
+import std;
+import column_mux::column_mux_cell;
+import decoder::minterm_decoder;
+
+namespace column_mux {
+
+    export namespace column_mux_array {
+
+        export template <pint N, M>
+        defproc column_mux_array (bool bl[N]; bool _bl[N]; bool bl_out[N/M]; bool _bl_out[N/M]; bool? addr[std::ceil_log2(M)])
+        {
+            column_mux::column_mux_cell::column_mux_cell cell_array[N*M];
+            bool sel[M];
+            decoder::minterm_decoder::minterm_decoder<M> decoder (.in=addr, .out=sel);
+
+            ( i : N/M : ( j : M :
+                cell_array[i*M+j] (.bl=bl[i*M+j], ._bl=_bl[i*M+j], .bl_out=bl_out[i], ._bl_out=_bl_out[i], .sel=sel[j]);
+            ))
+
+
+        }
+    }
+}
+

@@ -1,0 +1,14 @@
+namespace column_mux {
+
+    export namespace column_mux_cell {
+
+        export defproc column_mux_cell (bool bl; bool _bl; bool bl_out; bool _bl_out; bool? sel)
+        {
+            prs {
+                passn <2.88, 0.15> (sel,  bl,  bl_out)
+                passn <2.88, 0.15> (sel, _bl, _bl_out)
+            }
+        }
+    }
+}
+

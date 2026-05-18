@@ -4,8 +4,6 @@
  * The inverter has larger transistor sizes to drive the large capacitance of the wordline.
  */
 
-import std;
-
 namespace wordline_driver {
 
     export namespace gates {
