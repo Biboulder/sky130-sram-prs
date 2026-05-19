@@ -1,6 +1,5 @@
 /*
- * put together all of the stuff (decoder, wordline driver, bitcell array) to make a complete SRAM
- * NOT THOROUGHLY TESTED YET
+ * connect all of the parts (decoder, wordline driver, bitcell array, column multiplexer) to make a "complete" SRAM
 */
 
 
