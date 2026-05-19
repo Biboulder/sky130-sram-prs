@@ -1,39 +1,37 @@
-# sky130 SRAM — PRS Implementation
+# sky130 SRAM — ACT Implementation
 
 Filippo Pruzzi, s250237 \
 Stefano Garbari, s260328
 
+***
+
+## Overview
+
+A 128×64 SRAM macro implemented in ACT (Asynchronous Circuit Toolkit) PRS (Production Rule Set) language, targeting the SkyWater SKY130 130nm PDK. Provides a 32-bit word via 2:1 column multiplexing.
 
 ***
 
-## What This Is
+## Architecture
 
-A 6T SRAM bitcell stores one bit using six transistors: two cross-coupled inverters that hold the state (Q and Qb), and two access transistors controlled by a wordline (WL) that connect the storage nodes to the bitlines (BL, BR) during read and write operations.
-
-This project implements that cell in the ACT PRS (Production Rule Set) language, targeting the SkyWater SKY130 open-source 130nm PDK. It includes a SPICE testbench to verify write-1 and write-0 operations using ngspice.
-
-***
-
-## Files
-
-| File | Description |
-|---|---|
-| `sky130_6T_bitcell.act` | ACT PRS description of the 6T bitcell |
-| `sizes.act` | SKY130-specific transistor sizing parameters |
-| `sky130_6T_bitcell_tb.spice` | ngspice testbench — write-1 and write-0 operations |
-| `test.act` / `test.actsim` | actsim structural test for the PRS |
+| Component | Location | Description |
+|---|---|---|
+| 6T Bitcell | `src/mem/bitcell.act` | SKY130 6T SRAM bitcell with cross-coupled inverters and access transistors |
+| Bitcell Array | `src/mem/bitcell_array.act` | 128 rows × 64 columns |
+| Row Decoder | `src/decoder/hierarchical_decoder.act` | Hierarchical decoder for 128 row selection (7-bit address) |
+| Wordline Driver | `src/wordline_driver/wordline_driver.act` | Drives selected wordline |
+| Column Mux | `src/column_mux/column_mux_array.act` | 2:1 multiplexer to provide 32-bit words from 64 columns |
 
 ***
 
-## ACT PRS Structure
-
-The bitcell is defined inside `namespace mem { export namespace bitcell { ... } }` to match the ACT project conventions. The `defcell` signature is:
+## Interface
 
 ```act
-export defcell bitcell (bool? wl; bool bl, _bl)
+defproc sram (bool? addr[8]; bool? enable_wl; bool bl[32]; bool _bl[32])
 ```
 
-`wl` is declared `bool?` (bidirectional) because in a real array the wordline is driven externally. The `prs` block contains the four inverter rules for Q/_Q and two `passn` access transistors connecting the wordline to the bitlines. Sizing parameters (Wn, Wp, Wpass, L) are kept in a separate `sizes.act` file to cleanly separate structure from technology.
+- `addr[8]`: 8-bit address (addr[0] = column mux, addr[1..7] = row)
+- `enable_wl`: Wordline enable signal
+- `bl[32] / _bl[32]`: 32-bit bidirectional bitlines (read output, write input)
 
 ***
 
