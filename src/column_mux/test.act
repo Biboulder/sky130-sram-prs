@@ -1,0 +1,6 @@
+import column_mux::column_mux_array;
+
+defproc test ()
+{
+    column_mux::column_mux_array::column_mux_array<4, 2> mux;
+}

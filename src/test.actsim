@@ -1,0 +1,27 @@
+watch s.bl[0]
+watch s._bl[0]
+
+# addr=0: col select=0 (addr[0]=0), row=0 (addr[1..7]=0)
+set s.addr[0] 0
+set s.addr[1] 0
+set s.addr[2] 0
+set s.addr[3] 0
+set s.addr[4] 0
+set s.addr[5] 0
+set s.addr[6] 0
+set s.addr[7] 0
+set s.enable_wl 0
+
+# force bitcell at row=0 col=0 to store Q=1 (_Q=0)
+set s.bitcell_array.array[0].Q 1
+set s.bitcell_array.array[0]._Q 0
+cycle
+
+# precharge bitlines high
+set s.bl[0] 1
+set s._bl[0] 1
+cycle
+
+# raise wordline — _bl[0] should drop as _Q=0 pulls it low
+set s.enable_wl 1
+cycle

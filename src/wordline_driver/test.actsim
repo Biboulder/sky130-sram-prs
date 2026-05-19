@@ -1,0 +1,20 @@
+watch wd.out[0]
+watch wd.out[3]
+
+# enable = 0: all outputs should be 0 regardless of inputs
+set wd.enable 0
+set wd.in[0] 1
+set wd.in[3] 1
+cycle
+
+# enable = 1: out[i] follows in[i]
+set wd.enable 1
+cycle
+
+# deassert in[0]: out[0] should go low, out[3] stays high
+set wd.in[0] 0
+cycle
+
+# disable again: all outputs should go low
+set wd.enable 0
+cycle

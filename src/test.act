@@ -1,0 +1,6 @@
+import "sram.act";
+
+defproc test ()
+{
+    sram s;
+}

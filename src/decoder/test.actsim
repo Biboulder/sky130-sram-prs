@@ -1,0 +1,30 @@
+watch d.out[0]
+watch d.out[1]
+watch d.out[3]
+watch d.out[127]
+
+# addr = 0: all inputs low, expect out[0] = 1
+set d.in[0] 0
+set d.in[1] 0
+set d.in[2] 0
+set d.in[3] 0
+set d.in[4] 0
+set d.in[5] 0
+set d.in[6] 0
+cycle
+
+# addr = 1: in[0] = 1, expect out[1] = 1, out[0] = 0
+set d.in[0] 1
+cycle
+
+# addr = 3: in[0]=1 in[1]=1, expect out[3] = 1, out[1] = 0
+set d.in[1] 1
+cycle
+
+# addr = 127: all inputs high, expect out[127] = 1, out[3] = 0
+set d.in[2] 1
+set d.in[3] 1
+set d.in[4] 1
+set d.in[5] 1
+set d.in[6] 1
+cycle

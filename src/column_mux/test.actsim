@@ -1,0 +1,24 @@
+watch mux.bl_out[0]
+watch mux.bl_out[1]
+watch mux._bl_out[0]
+watch mux._bl_out[1]
+
+# addr=0 selects columns 0 and 2 (sel[0]=1)
+# drive bl[0]=1/_bl[0]=0, bl[2]=0/_bl[2]=1
+set mux.addr[0] 0
+set mux.bl[0] 1
+set mux._bl[0] 0
+set mux.bl[2] 0
+set mux._bl[2] 1
+cycle
+# expect: bl_out[0]=1, _bl_out[0]=0, bl_out[1]=0, _bl_out[1]=1
+
+# addr=1 selects columns 1 and 3 (sel[1]=1)
+# drive bl[1]=0/_bl[1]=1, bl[3]=1/_bl[3]=0
+set mux.addr[0] 1
+set mux.bl[1] 0
+set mux._bl[1] 1
+set mux.bl[3] 1
+set mux._bl[3] 0
+cycle
+# expect: bl_out[0]=0, _bl_out[0]=1, bl_out[1]=1, _bl_out[1]=0

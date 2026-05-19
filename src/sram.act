@@ -1,14 +1,19 @@
 /*
- * connect all of the parts (decoder, wordline driver, bitcell array, column multiplexer) to make a "complete" SRAM
+ * 128x64 SRAM (32-bit word, 2:1 column mux)
+ * Ports:
+ *   addr[8]    — 1 column-select bit (addr[0]) + 7 row-address bits (addr[1..7])
+ *   enable_wl  — wordline enable (asserted after address settles)
+ *   bl[32]     — muxed bitlines  (bidirectional: read path out, write path in)
+ *   _bl[32]    — muxed bitlines, complementary
 */
 
-
+import std;
 import mem::bitcell_array;
 import decoder::hierarchical_decoder;
 import wordline_driver::wordline_driver;
 import column_mux::column_mux_array;
 
-defproc sram ()
+defproc sram (bool? addr[8]; bool? enable_wl; bool bl[32]; bool _bl[32])
 {
     pint R = 128; // Number of rows
     pint C = 64;  // Number of columns
@@ -18,23 +23,16 @@ defproc sram ()
     pint col_addr_size = std::ceil_log2(C/W); // Number of bits in the column address (for muxing)
     pint addr_size = row_addr_size + col_addr_size; //  address size
 
-    bool addr[addr_size]; // Address bus
+    bool wl[R];
 
-    bool bl[W]; // muxed bitlines
-    bool _bl[W]; // muxed bitlines (inverted)
-    bool wl[R]; // wordlines physical
-    bool enable_wl;
-
-    // components
     decoder::hierarchical_decoder::hierarchical_decoder<R> decoder;
-    wordline_driver::wordline_driver::wordline_driver<R> wl_driver;
-    mem::bitcell_array::bitcell_array<R, C> bitcell_array;
+    wordline_driver::wordline_driver::wordline_driver<R>   wl_driver;
+    mem::bitcell_array::bitcell_array<R, C>                bitcell_array;
     column_mux::column_mux_array::column_mux_array<C, C/W> mux;
 
-    // connections
-    wl_driver (.enable=enable_wl, .in=decoder.out, .out=wl);
-    bitcell_array (.wl=wl, .bl=mux.bl, ._bl=mux._bl);
-    mux (.bl_out=bl, ._bl_out=_bl);
+    wl_driver    (.enable=enable_wl, .in=decoder.out, .out=wl);
+    bitcell_array(.wl=wl, .bl=mux.bl, ._bl=mux._bl);
+    mux          (.bl_out=bl, ._bl_out=_bl);
 
     mux.addr   = addr[0..col_addr_size-1];
     decoder.in = addr[col_addr_size..addr_size-1];
