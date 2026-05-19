@@ -1,0 +1,16 @@
+watch pre.bl[0]
+watch pre._bl[0]
+watch pre.bl[1]
+watch pre._bl[1]
+
+# pre_n=1: precharge off, bitlines float
+set pre.pre_n 1
+cycle
+
+# pre_n=0: precharge on, all bitlines pulled high
+set pre.pre_n 0
+cycle
+
+# pre_n=1: precharge released, bitlines hold
+set pre.pre_n 1
+cycle

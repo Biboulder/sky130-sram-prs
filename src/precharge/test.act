@@ -1,0 +1,6 @@
+import precharge::precharge_array;
+
+defproc test ()
+{
+    precharge::precharge_array::precharge_array<4> pre;
+}

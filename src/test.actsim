@@ -1,5 +1,9 @@
+watch s.phys_bl[0]
+watch s.phys__bl[0]
 watch s.bl[0]
 watch s._bl[0]
+watch s.bitcell_array.array[0].Q
+watch s.bitcell_array.array[0]._Q
 
 # addr=0: col select=0 (addr[0]=0), row=0 (addr[1..7]=0)
 set s.addr[0] 0
@@ -12,16 +16,17 @@ set s.addr[6] 0
 set s.addr[7] 0
 set s.enable_wl 0
 
-# force bitcell at row=0 col=0 to store Q=1 (_Q=0)
+# Initialise bitcell[0] to Q=1, _Q=0 (stored value to read back)
 set s.bitcell_array.array[0].Q 1
 set s.bitcell_array.array[0]._Q 0
+
+# ---- PRECHARGE ----
+set s.pre_n 0
 cycle
 
-# precharge bitlines high
-set s.bl[0] 1
-set s._bl[0] 1
-cycle
-
-# raise wordline — _bl[0] should drop as _Q=0 pulls it low
+# ---- READ: release precharge, open wordline ----
+# expect phys__bl[0] and _bl[0] to discharge (_Q=0 pulls _bl low)
+# expect phys_bl[0] and bl[0] to stay high (Q=1 holds bl high)
+set s.pre_n 1
 set s.enable_wl 1
 cycle

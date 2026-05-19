@@ -3,7 +3,8 @@
  * Ports:
  *   addr[8]    — 1 column-select bit (addr[0]) + 7 row-address bits (addr[1..7])
  *   enable_wl  — wordline enable (asserted after address settles)
- *   bl[32]     — muxed bitlines  (bidirectional: read path out, write path in)
+ *   pre_n      — precharge enable, active low (assert before each access)
+ *   bl[32]     — muxed bitlines (read output)
  *   _bl[32]    — muxed bitlines, complementary
 */
 
@@ -12,8 +13,9 @@ import mem::bitcell_array;
 import decoder::hierarchical_decoder;
 import wordline_driver::wordline_driver;
 import column_mux::column_mux_array;
+import precharge::precharge_array;
 
-defproc sram (bool? addr[8]; bool? enable_wl; bool bl[32]; bool _bl[32])
+defproc sram (bool? addr[8]; bool? enable_wl; bool? pre_n; bool bl[32]; bool _bl[32])
 {
     pint R = 128; // Number of rows
     pint C = 64;  // Number of columns
@@ -24,15 +26,18 @@ defproc sram (bool? addr[8]; bool? enable_wl; bool bl[32]; bool _bl[32])
     pint addr_size = row_addr_size + col_addr_size; //  address size
 
     bool wl[R];
+    bool phys_bl[C], phys__bl[C]; // physical bitlines (before column mux)
 
-    decoder::hierarchical_decoder::hierarchical_decoder<R> decoder;
-    wordline_driver::wordline_driver::wordline_driver<R>   wl_driver;
-    mem::bitcell_array::bitcell_array<R, C>                bitcell_array;
-    column_mux::column_mux_array::column_mux_array<C, C/W> mux;
+    decoder::hierarchical_decoder::hierarchical_decoder<R>  decoder;
+    wordline_driver::wordline_driver::wordline_driver<R>    wl_driver;
+    mem::bitcell_array::bitcell_array<R, C>                 bitcell_array;
+    column_mux::column_mux_array::column_mux_array<C, C/W>  mux;
+    precharge::precharge_array::precharge_array<C>           pre;
 
     wl_driver    (.enable=enable_wl, .in=decoder.out, .out=wl);
-    bitcell_array(.wl=wl, .bl=mux.bl, ._bl=mux._bl);
-    mux          (.bl_out=bl, ._bl_out=_bl);
+    bitcell_array(.wl=wl, .bl=phys_bl, ._bl=phys__bl);
+    pre          (.pre_n=pre_n, .bl=phys_bl, ._bl=phys__bl);
+    mux          (.bl=phys_bl, ._bl=phys__bl, .bl_out=bl, ._bl_out=_bl);
 
     mux.addr   = addr[0..col_addr_size-1];
     decoder.in = addr[col_addr_size..addr_size-1];

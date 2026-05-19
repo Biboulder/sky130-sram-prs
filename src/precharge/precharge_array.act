@@ -1,0 +1,22 @@
+namespace precharge {
+
+    export defproc precharge_cell (bool? pre_n; bool bl; bool _bl)
+    {
+        prs {
+            ~pre_n <0.84, 0.21> -> bl+
+            ~pre_n <0.84, 0.21> -> _bl+
+        }
+    }
+
+    export namespace precharge_array {
+
+        export template <pint N>
+        defproc precharge_array (bool? pre_n; bool bl[N]; bool _bl[N])
+        {
+            precharge::precharge_cell cells[N];
+            ( i : N :
+                cells[i] (.pre_n=pre_n, .bl=bl[i], ._bl=_bl[i]);
+            )
+        }
+    }
+}
