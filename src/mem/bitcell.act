@@ -1,14 +1,17 @@
 import globals;
-import "sizes.act";
 
 namespace mem {
     export namespace bitcell {
+
+        preal Wn    = 0.42;   /* pull-down NFET (2x special_nfet_latch W=0.21 in parallel) */
+        preal Wp    = 0.14;   /* pull-up  PFET (special_pfet_latch) */
+        preal Wpass = 0.21;   /* access   NFET (special_nfet_latch) */
+        preal L     = 0.15;   /* minimum gate length for both devices */
 
         /* sky130 6T SRAM bitcell
          * Devices: special_nfet_latch (W=0.21, L=0.15)
          *          special_pfet_latch (W=0.14, L=0.15)
          * Drive transistors use two passn in parallel (XM1a+XM1b) = W=0.42 equivalent
-         * Sizing parameters defined in sizes.act
          */
         export defcell bitcell (bool? wl; bool bl, _bl)
         {
