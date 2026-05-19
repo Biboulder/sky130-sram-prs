@@ -1,0 +1,35 @@
+/*
+ * Simple gates for the write driver.
+ * Skywater 130nm technology.
+ * NAND gates and pull-down buffers for write driver circuits.
+ */
+
+namespace write_driver {
+
+    export namespace gates {
+
+        export defproc nand2 (bool? a; bool? b; bool! out)
+        {
+            prs {
+                ( a<0.74,0.15> &  b<0.74,0.15>) -> out-
+                (~a<1.12,0.15> | ~b<1.12,0.15>) -> out+
+            }
+        }
+
+        export defproc nand2_wide (bool? a; bool? b; bool! out)
+        {
+            prs {
+                ( a<1.68,0.15> &  b<1.68,0.15>) -> out-
+                (~a<2.52,0.15> | ~b<2.52,0.15>) -> out+
+            }
+        }
+
+        export defproc pulldn (bool? in; bool! out)
+        {
+            prs {
+                in<0.84,0.15> -> out-
+            }
+        }
+
+    }
+}

@@ -1,0 +1,6 @@
+import "write_driver.act";
+
+defproc test ()
+{
+    write_driver::write_driver_array::write_driver_array<32> wd;
+}

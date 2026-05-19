@@ -1,0 +1,41 @@
+/*
+ * Write driver for the SRAM.
+ * Skywater 130nm technology.
+ * The write driver conditions the write data and write enable signals to drive the bitlines.
+ * Two NAND gates decode write_en && data and write_en && ~data to selectively pull down BL or BR.
+ */
+
+import write_driver::gates;
+
+namespace write_driver {
+
+    export namespace write_driver_cell {
+
+        export defproc write_driver_cell (bool? data; bool? write_en; bool! bl; bool! _bl)
+        {
+            bool data_anded;
+            bool data_bar_anded;
+
+            write_driver::gates::nand2_wide nand_data (.a=write_en, .b=data, .out=data_anded);
+            write_driver::gates::nand2_wide nand_data_bar (.a=write_en, .b=~data, .out=data_bar_anded);
+
+            write_driver::gates::pulldn pull_bl (.in=data_bar_anded, .out=bl);
+            write_driver::gates::pulldn pull_br (.in=data_anded, .out=_bl);
+        }
+
+    }
+
+    export namespace write_driver_array {
+
+        export template <pint W> // W: number of data bits (width)
+        defproc write_driver_array (bool? data[W]; bool? write_en; bool bl[W]; bool _bl[W])
+        {
+            write_driver::write_driver_cell::write_driver_cell drivers[W];
+
+            ( i : W :
+                drivers[i] (.data=data[i], .write_en=write_en, .bl=bl[i], ._bl=_bl[i]);
+            )
+        }
+
+    }
+}
