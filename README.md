@@ -64,7 +64,7 @@ Both are included automatically by `sky130.lib.spice` via `all.spice`, so no ext
 ### Peripheral logic devices
 
 All peripheral cells (decoder, wordline driver, precharge) use standard logic devices:
-`sky130_fd_pr__nfet_01v8` and `sky130_fd_pr__pfet_01v8`, confirmed against the VLSIDA OpenRAM sky130 sp_lib and the ShonTaware/SRAM_SKY130 reference.
+`sky130_fd_pr__nfet_01v8` and `sky130_fd_pr__pfet_01v8`, confirmed against the VLSIDA sky130 SRAM macros reference.
 
 ***
 
@@ -104,7 +104,7 @@ The NAND gate uses the same sizes as the decoder NAND. The inverter is upsized t
 
 ### Precharge
 
-Two PFET pull-ups per column (one for BL, one for BLB), confirmed against the ShonTaware/SRAM_SKY130 reference:
+Two PFET pull-ups per column (one for BL, one for BLB):
 
 | Cell | Device | W (µm) | L (µm) |
 |---|---|---|---|
@@ -151,6 +151,5 @@ Bitcell initialised to Q=1, _Q=0. Sequence: precharge → wordline open → read
 
 - VLSIDA sky130 SRAM macros: https://github.com/VLSIDA/sky130_sram_macros
 - VLSIDA OpenRAM sky130 sp_lib (decoder gate sizes): https://github.com/VLSIDA/OpenRAM/tree/dev/technology/sky130/sp_lib
-- ShonTaware SRAM SKY130 (precharge reference): https://github.com/ShonTaware/SRAM_SKY130
 - SKY130 PDK device details: https://skywater-pdk.readthedocs.io/en/main/rules/device-details.html
 - ACT language documentation: https://avlsi.csl.yale.edu/act/doku.php
